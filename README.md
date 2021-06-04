@@ -1,4 +1,4 @@
-# infinite-orm
+# infinite-simple-orm
 
 ![licence](https://img.shields.io/badge/licence-MIT-success)
 ![licence](https://img.shields.io/badge/PHP-v7.2-blue)
