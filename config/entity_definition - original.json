@@ -1,0 +1,57 @@
+{
+    "product": {
+        "id": {
+            "name" : "id",
+            "primary" : true
+        },
+        "product_name": "product_name",
+        "img_url" : "img_url",
+        "_assoc" : {
+            "product_sku" : {
+                "target" : "product_sku",
+                "refer" : "product_id",
+                "inverse" : "id",
+                "type" : "OneToMany"
+            }
+        }
+    },
+    "sku" : {
+        "id" : {
+            "primary" : true
+        },
+        "sku_name" : "sku_name",
+        "package_qty" : "package_qty",
+        "_assoc" : {
+            "product_sku" : {
+
+            }
+        }
+    },
+    "product_sku" : {
+        "product_id" : {
+            "primary" : true
+        },
+        "sku_id" : "sku_id",
+        "pricing_id" : "pricing_id",
+        "_assoc" : {
+            "sku" : {
+                "target" : "sku",
+                "refer" : "sku_id",
+                "inverse" : "sku_id",
+                "type" : "ManyToOne"
+            },
+            "product" : {
+                "target" : "product",
+                "refer" : "id",
+                "inverse" : "product_id",
+                "type" : "ManyToOne"
+            },
+            "pricing" : {
+                "target" : "unit_pricing",
+                "refer" : "id",
+                "inverse" : "pricing_id",
+                "type" : ""
+            }
+        }
+    }
+}

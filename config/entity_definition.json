@@ -1,0 +1,66 @@
+{
+    "product": {
+        "id": {
+            "name" : "product_id",
+            "primary" : true
+        },
+        "product_name": "product_name",
+        "img_url" : "img_url",
+        "_assoc" : {
+            "product_sku" : {
+                "target" : "product_sku",
+                "refer" : "product_id",
+                "inverse" : "id",
+                "type" : "OneToMany"
+            }
+        }
+    },
+    "sku" : {
+        "id" : {
+            "primary" : true
+        },
+        "sku_name" : "sku_name",
+        "package_qty" : "package_qty",
+        "_assoc" : {
+            "product_sku" : {
+
+            }
+        }
+    },
+    "product_sku" : {
+        "product_id" : {
+            "primary" : true
+        },
+        "sku_id" : {
+            "primary" : true
+        },
+        "pricing_id" : "pricing_id",
+        "_assoc" : {
+            "product" : {
+                "target" : "product",
+                "refer" : "product_id",
+                "inverse" : "product_id",
+                "type" : "ManyToOne"
+            }
+        }
+    },
+    "orders" : {
+        "date" : "date",
+        "id" : {
+            "primary" : true,
+            "name" : "order_id"
+        },
+        "shop_id" : "shop_id",
+        "agency_id" : "agency_id",
+        "total" : "total",
+        "status" : "status",
+        "_assoc" : {
+            "shop_orders" : {
+                "target" : "shop_order",
+                "refer" : "order_id",
+                "inverse" : "id",
+                "type" : "OneToMany"
+            }
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "name": "infinite/infinite-orm",
+    "description": "maps database tables to domain model objects",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maleesha Gimshan",
+            "email": "maleeshagimshan74@gmail.com",
+            "homepage": "https://www.github.com/maleeshagimshan98"
+        }
+    ],
+    "autoload" : {
+        "classmap": [
+            "EntityManager/",
+            "EntityManager/Entity/",
+            "EntityManager/Query/"
+        ]
+    },
+    "require": {
+        "envms/fluentpdo": "^2.1.0"
+    }
+}
