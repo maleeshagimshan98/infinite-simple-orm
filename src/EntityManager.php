@@ -403,10 +403,11 @@
                 "sql" => $this->sqlStatement->getSqlString(),
                 "data" => $data
             ]);
+            $hydrated = $this->hydrate($res);
             $this->currentAssociated->clear();
             /* TESTING */// echo $sql;
             /* TESTING */ //echo json_encode($res);
-            return $this->hydrate($res); 
+            return $hydrated; 
             //return $this->result($res);
         }
         if ($this->action === "insert")
