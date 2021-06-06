@@ -7,11 +7,6 @@
 
  namespace Infinite\DataMapper;
 
- include_once dirname(__DIR__)."/Products.php"; 
- include_once dirname(__DIR__)."/sku.php";
- include_once dirname(__DIR__)."/product_sku.php";
- include_once dirname(__DIR__)."/orders.php";
-
  use Infinite\DataMapper\EntityContainer;
  use Infinite\DataMapper\Entity\EntityResult;
  use Infinite\DataMapper\ChangeTracker;
@@ -155,10 +150,30 @@
     }
 
     /**
+     * parse a condition given in an array, to filter results from database
+     *
+     * @param array $condition
+     * @param Entity $entity
+     * @return array
+     */
+    protected function parseCondition ($condition,$entity = null)
+    {
+        if (\is_null($entity)){
+            $entity = $this->currentEntity;
+        }
+        $conditionParsed = [];
+        foreach ($condition as $key => $value) {
+            $mapped = $entity->mapAttribsToColumn($key);
+            $conditionParsed[$mapped] = $value;
+        }
+        return $conditionParsed;
+    }
+
+    /**
      * get entity from database
      *
      * @param string $entity entity name
-     * @param array|null $id get a row based on id [column_name,value]
+     * @param array|null $id get a row based on id [column_name => value]
      * @return self
      * @throws \Exception
      */
@@ -168,9 +183,7 @@
         $this->setCurrentEntity($entity); //echo json_encode($this->currentEntity);
         $sql = $this->prepareGet($this->currentEntity);
         if (!empty($id)) {
-            $sql = $sql->where([
-                $this->currentEntity->mapAttribsToColumn($id[0]) => $id[1]
-            ]);        
+            $sql = $sql->where($this->parseCondition($id));        
         }
         return $this;
         /** TESTING */ //echo json_encode();
@@ -184,26 +197,22 @@
      * @return self
      * @throws \Exception
      */
-    public function associate ($entity,$joiningEntityId = null)
+    public function associate ($entityName,$joiningEntityId = null)
     {
-        $associated = $this->currentEntity->associations->get($entity);
-        $target = $this->entities->get($associated->target);        
-        $this->currentAssociated->set($associated->target,$target); //IMPORTANT - CHECK IF THIS IS NEEDED - $target
+        $associated = $this->currentEntity->associations->get($entityName);
+        $target = $this->entities->get($associated->target); //IMPORTANT - WHAT IF TARGET IS AN ARRAY       
+        $this->currentAssociated->set($associated->target,$target);
         
-        $this->sqlStatement = $this->sqlStatement->leftJoin([
+        $this->sqlStatement = $this->sqlStatement->leftJoin([            
             $target->mapAttribsToColumn($associated->refer),
             $this->currentEntity->mapAttribsToColumn($associated->inverse)
             ])->select($target->mapAttribsToColumn());
         
-            if (is_array($joiningEntityId))
-            {
-                $this->sqlStatement = $this->sqlStatement->where(
-                    [
-                        $target->mapAttribsToColumn($joiningEntityId[0]) => $joiningEntityId[1]
-                    ]
-                );
-            }
-            return $this;
+        if (is_array($joiningEntityId))
+        {
+            $this->sqlStatement = $this->sqlStatement->where($this->parseCondition($joiningEntityId,$target));
+        }
+        return $this;
     }
     
     /**
@@ -240,16 +249,16 @@
      * (only single object from result set,
      * run this multiple times to hydrate all entities, and associated ones)
      *
-     * @param Infinite\DataMapper\Entity\EntityResult $entity entiy result object
+     * @param EntityResult $entity entiy result object
      * @param array|object $data data fetched from database
-     * @return Infinite\DataMapper\Entity\EntityResult
+     * @return EntityResult
      */
     protected function hydrateAssociated ($entity,$data) 
     {
-        $associated = $this->currentAssociated->getAll(); 
+        $associated = $this->currentAssociated->getAll();
         foreach ($associated as $key => $value) 
         {
-            $assocEntityResult = $this->entities->entity($key)->hydrate($data);
+            $assocEntityResult = $value->hydrate($data);
             $entity->set($key,$assocEntityResult);
             //$this->tracker->addTracking($assoc->name(),$assoc);
         }

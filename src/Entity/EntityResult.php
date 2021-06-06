@@ -41,23 +41,14 @@
      {
          $this->__createdAt = explode(".",microtime(true))[1]; 
          $this->entityName = $name;
-         if ($this->is_assoc($props))
-         {
-            foreach ($props as $key => $value)
-            {
-                $this->props[] = $key;
-                $this->$key = $value;
-            }
-         }
-         else 
+         if (is_array($props))
          {
              foreach ($props as $key)
              {
                 $this->props[] = $key;
                  $this->$key = "";
              }
-         }
-         
+         }         
      }
 
    final public function __getCreatedTime ()
@@ -244,14 +235,15 @@
     }
 
     /**
-     * set object proprties from an associative array
+     * set object proprties from an object
      *
-     * @param array $array an associative array of object props and values
+     * @param object $obj an object with props and values
      * @return void
      */
     public function __setFromObj ($obj)
     {
-       foreach ($this->props() as $key)
+       $props = $this->props();
+       foreach ($props as $key)
        {
           if (!isset($obj->$key))
           {

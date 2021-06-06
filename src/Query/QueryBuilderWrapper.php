@@ -177,35 +177,19 @@ class QueryBuilderWrapper
     /**
      * set where clause
      * 
-     * @param array $condition - [table_name.column_name => value], [[table_name.column_name => value],[...]]
+     * @param array $condition - [..., table_name.column_name => value]
      * @return self
      * @throws \Exception
      */
     public function where ($condition)
     {
-        $whereParams = [];
         if (!\is_array($condition))
         {
             throw new \Exception("Invalid_Parameter_Type");
         }
 
-        if (!$this->is_assoc($condition))
-        {
-            foreach($condition as $key)
-            {
-                $this->where($key); //IMPORTANT - CHECK IF $whereParams is same instance or other instance when recursing
-                continue;
-            }
-        }
-        else
-        {
-            foreach ($condition as $key => $val)
-            {
-                $whereParams[$key] = $val;
-            }
-            $this->sql = $this->sql->where($whereParams);
-            return $this;
-        }
+        $this->sql = $this->sql->where($condition);
+        return $this;
     }
 
     /**

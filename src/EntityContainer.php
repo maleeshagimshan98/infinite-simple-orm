@@ -17,7 +17,7 @@
      *
      * @var string
      */
-    protected $base_class_name = "\Infinite\DataMapper\Entity\\";
+    protected $base_class_name = "\Infinite\DataMapper\Entity";
 
     /**
      * database schema
@@ -68,6 +68,7 @@
       *
       * @param string $name entity name
       * @return \Infinite\DataMapper\Entity entity object
+      * @throws \Exception
       */
      public function entity ($name)
      {
@@ -76,8 +77,8 @@
          {
              throw new \Exception("Undefined_Entity");
          }
-         $entityClass = $this->base_class_name."$name";
-         return $this->entities[$name] = new $entityClass($entityDef,$name);         
+        
+         return $this->entities[$name] = new $this->base_class_name($entityDef,$name);         
      }
 
      /**

@@ -123,7 +123,19 @@
     }
 
     /**
-     * sets the attribute's name with respect of configuration options
+     * parse attribute's name
+     *
+     * @param string $name attribute name
+     * @param object $attrib attribute's options (if any, or a string)
+     * @return string
+     */
+    protected function parseAttribName ($name,$attrib)
+    {
+      return (isset($attrib->name) && is_string($attrib->name)) ? $attrib->name : $name;
+    }
+
+    /**
+     * sets the attribute's name, properties (if any) with respect of configuration options
      *
      * @param string $attribName attribute name entity
      * @param string|object $attrib attribute options (if any), or (similar as $attribName)
@@ -140,19 +152,16 @@
       }
 
        if (\is_object($attrib))
-       {          
-          if (!empty($attrib->name))
-          {
-             $result->name = $attrib->name;
-          }
+       { 
           if (isset($attrib->primary) && $attrib->primary == true)
-          { //attribs with primary key, but no name comes here            
-             $result->primary = $attrib->name ?? $attribName;
-             $result->name = $attrib->name ?? $attribName;
+          {             
+             $result->primary = $this->parseAttribName($attribName,$attrib);
+             $result->name = $this->parseAttribName($attribName,$attrib);
           }
           if (isset($attrib->autoIncrement) && $attrib->autoIncrement == true)
           {
-            $result->properties["autoIncrement"] = $attrib->name ?? $attribName;
+            $result->properties["autoIncrement"] = $this->parseAttribName($attribName,$attrib);
+            $result->name = $this->parseAttribName($attribName,$attrib);
           }
        }
        elseif (is_string($attrib))
@@ -171,6 +180,9 @@
     public function init ($attrib)
     {
       foreach ($attrib as $key => $values) {
+         if ($key == "__table_name") {
+            continue;
+         }
          $attribute = $this->parseAttribute($key,$values);
 
          if ($attribute) {            
@@ -238,7 +250,7 @@
    protected function mapAttribs ($attribute)
    {
       if ($attribute === null) {
-         return array_keys($this->attrib_map_inverse); //check
+         return array_values($this->attrib_map_inverse); //check
       }
 
       if (!is_null($attribute) && !isset($this->attrib_map_inverse[$attribute])) {

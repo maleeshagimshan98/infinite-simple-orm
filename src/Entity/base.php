@@ -45,7 +45,7 @@
      *
      * @var string
      */
-    protected $entity_table = "";
+    protected $entityTable = "";
 
     /**
      * entity associations with other entities
@@ -68,14 +68,15 @@
      * @return void
      * @throws \Exceptions
      */
-    public function __construct ($attribs,$name)
+    public function __construct ($attribs,$name = "")
     {
        if (!$attribs) {
           throw new \Exception("Invalid_Entity_Definition");
       }
        $this->attribs = new AttributeMapContainer();
        $this->associations = new AssociatedEntityContainer();
-       $this->entity_table = $name;
+       $this->entityTable = $name;
+       $this->entityName = $name;
        $this->init($attribs,$name);
     }
 
@@ -109,29 +110,6 @@
       return $this->attribs->primary();
    }
 
-   /**
-    * initialize entity's properties
-    *
-    * @param string|array $prop
-    * @return void
-    */
-   public function initProps ($prop)
-   {
-      if (!$prop)
-      {
-         return;
-      }
-      if (is_array($prop))
-      {
-         foreach ($prop as $key)
-         {
-            $this->$key = null;
-         }
-         return;
-      }
-      $this->$prop = null;      
-   }
-
     /**
      * validate data with defined data types
      * 
@@ -141,6 +119,38 @@
     public function validate ($props)
     {
 
+    }
+
+    /**
+     * set entity's table name
+     *
+     * @param object $attribs entity definition object
+     * @param string $name entity name
+     * @return void
+     * @throws \Exception
+     */
+    protected function setEntityTableName ($attribs,$name)
+    {
+      if ($this->entityTable !== "")
+      {
+         return;
+      }
+      switch ($name) {
+         case "" :
+            if(!isset($attribs->__table_name)) {
+               throw new \Exception("Table_Name_Not_Defined");
+            }
+            $this->entityTable = $attribs->__table_name;
+         break;
+
+         case ($name !== "") :
+            if (isset($attribs->__table_name) && ($attribs->__table_name !== "")) {
+               $this->entityTable = $attribs->__table_name;
+               break;
+            }
+            $this->entityTable = $name;
+         break;
+      }
     }
 
     /**
@@ -154,11 +164,7 @@
     { /* TESTING */   //echo \json_encode($attribs);
        $keys = [];
        
-      if ($this->entity_table == "")
-      {
-         $this->entity_table = $name;
-      }
-
+      $this->setEntityTableName($attribs,$name);
       $this->attribs->init($attribs);
 
       if (isset($attribs->_assoc)) {
@@ -242,7 +248,7 @@
     }
 
     /**
-     * map column names to entity attributes
+     * map properties of database result (column names) to entity attribute names
      *
      * @param mixed $data
      * @param EntityResult $entityResult
@@ -270,25 +276,10 @@
        $arr = [];
        $entityResult = $this->initEntityResult();  //always returns a new instance
        return $this->mapColumnsToAttribs($data,$entityResult);
-    }
+    }   
 
     /**
-     * set a field value
-     *
-     * @param string $attribute attribute name
-     * @param mixed $value attribute's value
-     * @return void
-     * @throws \Exception
-     */
-    public function set ($attribute,$value)
-    {
-       /** Throws \Exception if attribute not found */
-       $this->attribs->getAttrib($attribute);
-       $this->$attribute = $value;
-    }
-
-    /**
-     * get an indexed array of data for insertion, based on entity's atrributes
+     * get an indexed array of data for insertion, based on entity's atributes
      * (only entity owned attributes)
      * returns an indexed array containing values
      *
