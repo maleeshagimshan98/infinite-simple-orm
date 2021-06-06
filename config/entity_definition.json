@@ -28,6 +28,7 @@
         }
     },
     "product_sku" : {
+        "__table_name" : "product_sku",
         "product_id" : {
             "primary" : true
         },
@@ -61,6 +62,14 @@
                 "inverse" : "id",
                 "type" : "OneToMany"
             }
+        }
+    },
+    "login_record" : {
+        "user_id" : "user_id",
+        "hash" : "hash",
+        "time" : "time",
+        "no" : {
+            "autoIncrement" : true
         }
     }
 }
