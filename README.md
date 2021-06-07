@@ -163,18 +163,18 @@ takes care of changed properties and updates the database, once you save.
 
   * From last example, to change a property in the Entity and save,
 
-    ````php
+````php
 
-    $data = $EntityManager->get('entity_name',['entity_attrib' => 'some_value', 'entity_attrib_2' => 'some_other_value'])->go();
-    $data_one = $data[0];
+$data = $EntityManager->get('entity_name',['entity_attrib' => 'some_value', 'entity_attrib_2' => 'some_other_value'])->go();
+$data_one = $data[0];
 
-    $data_one->some_attribute = "just_changed";
-    $entityManager->save($data_one);
+$data_one->some_attribute = "just_changed";
+$entityManager->save($data_one);
 
-    //go() executes the query and do the insertion 
-    $entityManager->go();
+//go() executes the query and do the insertion 
+$entityManager->go();
 
-    ````
+````
 
 
 ```php
