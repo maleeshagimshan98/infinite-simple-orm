@@ -103,9 +103,9 @@ class pdoConnection  {
 
 ````php
 "product" : {
-     {
+     
        "entity_attribute" : {"autoIncrement" : TRUE}
-     }
+     
 }
 ````
 
