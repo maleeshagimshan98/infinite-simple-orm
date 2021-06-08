@@ -162,11 +162,48 @@
             $entity = $this->currentEntity;
         }
         $conditionParsed = [];
+        $values = [];
         foreach ($condition as $key => $value) {
             $mapped = $entity->mapAttribsToColumn($key);
             $conditionParsed[$mapped] = $value;
+            $values[] = $value;
         }
-        return $conditionParsed;
+        return (object) ["condition" => $conditionParsed, "values" => $values];
+    }
+
+    /**
+     * add sql statement and data to sqlStatementStack
+     *
+     * @param  $sqlStatement
+     * @param string $data
+     * @return void
+     */
+    protected function addToSqlStatementStack ($sqlStatement,$data = null)
+    {
+        $this->sqlStatementStack[] = array($sqlStatement->getSqlString(),$data);
+    }
+
+    /**
+     * update sqlStatementStack element
+     *
+     * @param  $sqlStatement
+     * @param array|null $data
+     * @return void
+     */
+    protected function updateSqlStatementStack ($sqlStatement,$data = null)
+    {
+        $this->sqlStatementStack[0][0] = $sqlStatement->getSqlString();
+
+        if(
+            isset($this->sqlStatementStack[0][1]) &&
+            is_array($this->sqlStatementStack[0][1]) &&
+            isset($data)
+         ){
+             array_merge($statement[1],$parsed->values);
+         }
+        if (isset($data) && is_null($this->sqlStatementStack[0][1])) {
+            $this->sqlStatementStack[0][1] = $data;
+        }
     }
 
     /**
@@ -183,8 +220,10 @@
         $this->setCurrentEntity($entity); //echo json_encode($this->currentEntity);
         $sql = $this->prepareGet($this->currentEntity);
         if (!empty($id)) {
-            $sql = $sql->where($this->parseCondition($id));        
+            $parsed = $this->parseCondition($id);
+            $sql = $sql->where($parsed->condition);        
         }
+        $this->addToSqlStatementStack($sql,$parsed->values??null);
         return $this;
         /** TESTING */ //echo json_encode();
     }
@@ -210,8 +249,11 @@
         
         if (is_array($joiningEntityId))
         {
-            $this->sqlStatement = $this->sqlStatement->where($this->parseCondition($joiningEntityId,$target));
+            $parsed = $this->parseCondition($joiningEntityId,$target);
+            $this->sqlStatement = $this->sqlStatement->where($parsed->condition);
         }
+        
+        $this->updateSqlStatementStack($this->sqlStatement,$parsed->values??null);        
         return $this;
     }
     
@@ -409,13 +451,12 @@
         if ($this->action === 'select')
         {
             $res = $this->queryDb->select((object) [
-                "sql" => $this->sqlStatement->getSqlString(),
-                "data" => $data
+                "sql" => $this->sqlStatementStack[0][0],
+                "data" => $this->sqlStatementStack[0][1]
             ]);
             $hydrated = $this->hydrate($res);
             $this->currentAssociated->clear();
-            /* TESTING */// echo $sql;
-            /* TESTING */ //echo json_encode($res);
+            $this->sqlStatementStack = [];
             return $hydrated; 
             //return $this->result($res);
         }

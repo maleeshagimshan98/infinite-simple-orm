@@ -75,7 +75,6 @@
       }
        $this->attribs = new AttributeMapContainer();
        $this->associations = new AssociatedEntityContainer();
-       $this->entityTable = $name;
        $this->entityName = $name;
        $this->init($attribs,$name);
     }
@@ -131,26 +130,15 @@
      */
     protected function setEntityTableName ($attribs,$name)
     {
-      if ($this->entityTable !== "")
-      {
-         return;
-      }
-      switch ($name) {
-         case "" :
-            if(!isset($attribs->__table_name)) {
-               throw new \Exception("Table_Name_Not_Defined");
-            }
-            $this->entityTable = $attribs->__table_name;
-         break;
-
-         case ($name !== "") :
-            if (isset($attribs->__table_name) && ($attribs->__table_name !== "")) {
+       if(!isset($attribs->__table_name)) {
+               $this->tableName = $name;
+       }
+       if (isset($attribs->__table_name) && ($attribs->__table_name !== "")) {
                $this->entityTable = $attribs->__table_name;
-               break;
-            }
-            $this->entityTable = $name;
-         break;
-      }
+       }
+       else {
+          $this->entityTable = $name;
+       }
     }
 
     /**
