@@ -1,0 +1,7 @@
+01. Cannot use nested class names after the namespace
+02. Performance limitations when writing to database
+    - iterating twice (because query construction done in WriteManager)
+         01. for getting attributes mapped to column names - Mapper -> extractData()
+         02. generating query parameters
+
+03. Try to make the mapper unaware of IdentityMap

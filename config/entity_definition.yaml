@@ -1,0 +1,50 @@
+
+# Entity Attribute Mappings To Database
+
+Student : # this is the entity's class name
+    table : students
+    repository : App\Student # optional - if not present, default in-build repository will be given
+    attributes : 
+        id : 
+            primary : true                
+        name : name
+        age : age
+        country : country        
+
+Parent :
+    table : parent
+    attributes : 
+        id :
+            primary : true
+            name : parent_id
+        name : name
+        occupation : occupation
+        child_id : child_id
+
+Teacher : 
+    table : teachers
+    attributes : 
+        id :
+            primary : true 
+            name : teacher_id
+        name : name
+        subject_id : subject_id
+        
+Subject : 
+    table : subject
+    attributes : 
+        id :
+            primary : true 
+            name : subject_id
+        name : subject        
+    # be cautious when parsing associations,
+    # check if we want to include them in primary columns list too or just save them in associations array            
+    associations : 
+        Teachers : 
+            target : Teacher # always refer entity's class name and attributes
+            refer : subject_id
+            inverse : id
+            type : OneToMany
+            fetch : eager # optional - default is set to lazy
+        
+    

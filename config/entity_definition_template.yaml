@@ -1,0 +1,33 @@
+
+# Entity Attribute Mappings To Database
+
+User : # this is the entity's class name
+    table : user
+    repository : App\User # optional - if not present, default in-build repository will be given
+    attributes : 
+        id :
+            type : integer # optional - if not present, default type will be string
+            primary : true
+            length : 50     # optional - set the length of value
+            autoIncrement : true # optional - if true, ORM does not consider this attribute for update/insert queries                
+        name : name
+        registered_date : registered_date
+        location : location  
+        password : password
+    associations :
+        mobile_numbers : 
+        # be cautious when parsing associations,
+        # check if we want to include them in primary columns list too or just save them in associations array
+            target : MobileNumbers # always refer entity's class name and attributes
+            refer : userId
+            inverse : id
+            type : OneToMany
+            fetch : eager # optional - default is set to lazy
+
+MobileNumbers :
+    table : mobile_numbers
+    attributes : 
+        userId : user_id
+        mobile_number : mobile_number
+        
+    

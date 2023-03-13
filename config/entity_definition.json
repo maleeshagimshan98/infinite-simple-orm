@@ -1,0 +1,32 @@
+[
+    {
+        "name" : "User",
+        "table" : "user",
+        "attributes" : {
+            "id" : {
+                "primary" : true
+            },        
+            "name" : "name",
+            "registered_date" : "registered_date",
+            "location" : "location",  
+            "password" : "password",
+            "mobile_numbers" : {
+                "name" : "mobile_numbers",
+                "relationship" : {
+                    "target" : "MobileNumbers",
+                    "refer" : "userId",
+                    "inverse" : "id",
+                    "type" : "OneToMany"
+                }                
+            }
+        }        
+    },
+    {
+        "name"  : "MobileNumbers",
+        "table" :"mobile_numbers",
+        "attributes" : {
+            "userId" : "user_id",
+            "mobile_number" : "mobile_number"
+        }
+    }
+]
